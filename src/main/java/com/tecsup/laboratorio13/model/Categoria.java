@@ -3,8 +3,10 @@ package com.tecsup.laboratorio13.model;
 import jakarta.persistence.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
+@JsonIgnoreProperties(value = { "productos" }, allowGetters = true)
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -93,6 +93,7 @@ public class CategoriaController {
         if (categoria.isPresent()) {
             Categoria c = categoria.get();
             c.setNombre(categoriaActualizada.getNombre());
+            // No modificar productos al actualizar
             categoriaRepository.save(c);
             return "Categoría actualizada";
         } else {
