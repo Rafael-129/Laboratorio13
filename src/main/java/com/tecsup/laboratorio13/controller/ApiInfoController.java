@@ -11,7 +11,12 @@ public class ApiInfoController {
 
     @GetMapping("/")
     public String home() {
-        return "API REST para gestión de productos y categorías";
+        return "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/index.html\"></head></html>";
+    }
+
+    @GetMapping("/docs")
+    public String docs() {
+        return "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/api-docs.html\"></head></html>";
     }
 
     @GetMapping("/api")

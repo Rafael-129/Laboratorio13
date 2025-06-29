@@ -1,26 +1,26 @@
 package com.tecsup.laboratorio13.model;
 
 import jakarta.persistence.*;
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.HashSet;
+import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Categoria {
+public class Etiqueta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String nombre;
 
-    @OneToMany(mappedBy = "categoria")
-    @JsonManagedReference
-    private List<Producto> productos;
+    @JsonIgnore
+    @ManyToMany(mappedBy = "etiquetas")
+    private Set<Producto> productos = new HashSet<>();
 
-    // Constructor sin argumentos requerido por JPA
-    public Categoria() {
+    public Etiqueta() {
     }
 
-    // Constructor con nombre
-    public Categoria(String nombre) {
+    public Etiqueta(String nombre) {
         this.nombre = nombre;
     }
 
@@ -40,11 +40,11 @@ public class Categoria {
         this.nombre = nombre;
     }
 
-    public List<Producto> getProductos() {
+    public Set<Producto> getProductos() {
         return productos;
     }
 
-    public void setProductos(List<Producto> productos) {
+    public void setProductos(Set<Producto> productos) {
         this.productos = productos;
     }
 }

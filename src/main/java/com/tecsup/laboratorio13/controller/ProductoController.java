@@ -138,4 +138,18 @@ public class ProductoController {
             return "Producto no encontrado";
         }
     }
+
+    // Obtener todas las etiquetas de un producto
+    @GetMapping("/{id}/etiquetas")
+    public ResponseEntity<?> obtenerEtiquetasDeProducto(@PathVariable Integer id) {
+        Optional<Producto> productoOpt = productoRepository.findById(id);
+
+        if (!productoOpt.isPresent()) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Producto no encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        return ResponseEntity.ok(productoOpt.get().getEtiquetas());
+    }
 }
