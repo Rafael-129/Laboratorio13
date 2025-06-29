@@ -1,0 +1,16 @@
+// Ejemplo para crear una Categoría (POST a /api/categorias)
+{
+    "nombre": "Electrónicos"
+}
+
+// Ejemplo para crear un Producto (POST a /api/productos)
+{
+    "nombre": "Laptop",
+    "precio": 1499.99,
+    "categoria": {
+        "id": 1
+    }
+}
+
+// Nota: Para crear un producto, primero debes crear una categoría
+// y luego usar el ID de esa categoría en el campo "categoria.id"

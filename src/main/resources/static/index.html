@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API de Productos y Categorías</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 30px;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .endpoint {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-left: 3px solid #3498db;
+            background-color: #f8f9fa;
+        }
+        .method {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .url {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .description {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>API de Productos y Categorías</h1>
+
+    <p>Esta API REST permite gestionar productos y categorías. A continuación se detallan los endpoints disponibles y cómo utilizarlos.</p>
+
+    <h2>Instrucciones para usar Postman</h2>
+    <ol>
+        <li>Configura el método HTTP (GET, POST, PUT, DELETE) según el endpoint que desees utilizar.</li>
+        <li>Ingresa la URL completa del endpoint.</li>
+        <li>Para solicitudes POST y PUT, ve a la pestaña "Body", selecciona "raw" y luego selecciona "JSON" en el desplegable.</li>
+        <li>Ingresa el JSON según el formato indicado para cada endpoint.</li>
+        <li>Haz clic en "Send" para enviar la solicitud.</li>
+    </ol>
+
+    <h2>Endpoints de Categorías</h2>
+
+    <div class="endpoint">
+        <div><span class="method">GET</span> <span class="url">/api/categorias</span></div>
+        <div class="description">Obtiene todas las categorías existentes.</div>
+    </div>
+
+    <div class="endpoint">
+        <div><span class="method">POST</span> <span class="url">/api/categorias</span></div>
+        <div class="description">Crea una nueva categoría.</div>
+        <h4>Body:</h4>
+        <pre>{
+    "nombre": "Electrónicos"
+}</pre>
+    </div>
+
+    <div class="endpoint">
+        <div><span class="method">GET</span> <span class="url">/api/categorias/{id}</span></div>
+        <div class="description">Obtiene una categoría específica por su ID.</div>
+    </div>
+
+    <div class="endpoint">
+        <div><span class="method">PUT</span> <span class="url">/api/categorias/{id}</span></div>
+        <div class="description">Actualiza una categoría existente.</div>
+        <h4>Body:</h4>
+        <pre>{
+    "nombre": "Electrónicos Actualizados"
+}</pre>
+    </div>
+
+    <div class="endpoint">
+        <div><span class="method">DELETE</span> <span class="url">/api/categorias/{id}</span></div>
+        <div class="description">Elimina una categoría por su ID.</div>
+    </div>
+
+    <h2>Endpoints de Productos</h2>
+
+    <div class="endpoint">
+        <div><span class="method">GET</span> <span class="url">/api/productos</span></div>
+        <div class="description">Obtiene todos los productos existentes.</div>
+    </div>
+
+    <div class="endpoint">
+        <div><span class="method">POST</span> <span class="url">/api/productos</span></div>
+        <div class="description">Crea un nuevo producto.</div>
+        <h4>Body:</h4>
+        <pre>{
+    "nombre": "Laptop",
+    "precio": 1499.99,
+    "categoria": {
+        "id": 1
+    }
+}</pre>
+    </div>
+
+    <div class="endpoint">
+        <div><span class="method">GET</span> <span class="url">/api/productos/{id}</span></div>
+        <div class="description">Obtiene un producto específico por su ID.</div>
+    </div>
+
+    <div class="endpoint">
+        <div><span class="method">PUT</span> <span class="url">/api/productos/{id}</span></div>
+        <div class="description">Actualiza un producto existente.</div>
+        <h4>Body:</h4>
+        <pre>{
+    "nombre": "Laptop Actualizada",
+    "precio": 1599.99,
+    "categoria": {
+        "id": 1
+    }
+}</pre>
+    </div>
+
+    <div class="endpoint">
+        <div><span class="method">DELETE</span> <span class="url">/api/productos/{id}</span></div>
+        <div class="description">Elimina un producto por su ID.</div>
+    </div>
+
+    <h2>Flujo recomendado</h2>
+    <ol>
+        <li>Crear una categoría (POST /api/categorias)</li>
+        <li>Obtener el ID de la categoría creada (GET /api/categorias)</li>
+        <li>Crear un producto utilizando ese ID de categoría (POST /api/productos)</li>
+        <li>Consultar los productos (GET /api/productos)</li>
+    </ol>
+</body>
+</html>
