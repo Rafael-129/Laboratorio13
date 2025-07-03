@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/etiquetas")
@@ -28,7 +28,7 @@ public class EtiquetaController {
 
     // Crear una etiqueta
     @PostMapping
-    public ResponseEntity<Map<String, Object>> crearEtiqueta(@RequestBody(required = false) Etiqueta etiqueta) {
+    public ResponseEntity<Map<String, Object>> crearEtiqueta(@Valid @RequestBody(required = false) Etiqueta etiqueta) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -37,12 +37,6 @@ public class EtiquetaController {
                 response.put("error", "El cuerpo de la solicitud está vacío");
                 response.put("ayuda", "Asegúrate de enviar un JSON válido en el formato correcto");
                 response.put("ejemplo", "{ \"nombre\": \"Oferta\" }");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            // Validar que la etiqueta tenga un nombre
-            if (etiqueta.getNombre() == null || etiqueta.getNombre().trim().isEmpty()) {
-                response.put("error", "El nombre de la etiqueta es obligatorio");
                 return ResponseEntity.badRequest().body(response);
             }
 
@@ -82,7 +76,7 @@ public class EtiquetaController {
 
     // Actualizar una etiqueta
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> actualizarEtiqueta(@PathVariable Integer id, @RequestBody Etiqueta etiquetaActualizada) {
+    public ResponseEntity<Map<String, Object>> actualizarEtiqueta(@PathVariable Integer id, @Valid @RequestBody Etiqueta etiquetaActualizada) {
         Map<String, Object> response = new HashMap<>();
 
         return etiquetaRepository.findById(id)
@@ -120,7 +114,7 @@ public class EtiquetaController {
     // Agregar una etiqueta a un producto
     @PostMapping("/{etiquetaId}/productos/{productoId}")
     public ResponseEntity<Map<String, Object>> agregarEtiquetaAProducto(
-            @PathVariable Integer etiquetaId, 
+            @PathVariable Integer etiquetaId,
             @PathVariable Integer productoId) {
 
         Map<String, Object> response = new HashMap<>();
@@ -154,7 +148,7 @@ public class EtiquetaController {
     // Eliminar una etiqueta de un producto
     @DeleteMapping("/{etiquetaId}/productos/{productoId}")
     public ResponseEntity<Map<String, Object>> eliminarEtiquetaDeProducto(
-            @PathVariable Integer etiquetaId, 
+            @PathVariable Integer etiquetaId,
             @PathVariable Integer productoId) {
 
         Map<String, Object> response = new HashMap<>();
@@ -189,13 +183,12 @@ public class EtiquetaController {
     @GetMapping("/{etiquetaId}/productos")
     public ResponseEntity<?> obtenerProductosPorEtiqueta(@PathVariable Integer etiquetaId) {
         Optional<Etiqueta> etiquetaOpt = etiquetaRepository.findById(etiquetaId);
-
         if (!etiquetaOpt.isPresent()) {
             Map<String, String> response = new HashMap<>();
             response.put("error", "Etiqueta no encontrada");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-
         return ResponseEntity.ok(etiquetaOpt.get().getProductos());
     }
 }
+

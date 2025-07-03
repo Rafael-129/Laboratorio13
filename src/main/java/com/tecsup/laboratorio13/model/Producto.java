@@ -4,18 +4,29 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @NotBlank(message = "El nombre no puede estar vacío")
+    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
     private String nombre;
+
+    @Positive(message = "El precio debe ser positivo")
     private double precio;
 
+    @NotNull(message = "La categoría es obligatoria")
     @ManyToOne
     @JoinColumn(name = "categoria_id")
-    @JsonBackReference
+    @JsonIgnoreProperties("productos")
     private Categoria categoria;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

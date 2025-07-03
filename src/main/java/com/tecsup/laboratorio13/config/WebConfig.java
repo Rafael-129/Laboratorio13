@@ -22,11 +22,8 @@ public class WebConfig implements WebMvcConfigurer {
             if (converter instanceof MappingJackson2HttpMessageConverter) {
                 MappingJackson2HttpMessageConverter jsonConverter = (MappingJackson2HttpMessageConverter) converter;
                 ObjectMapper objectMapper = jsonConverter.getObjectMapper();
-                // Permite propiedades desconocidas en JSON (ignora campos extra)
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                // Permite objetos vacíos
                 objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-                // Añadir configuraciones adicionales
                 objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
                 objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
                 objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
@@ -36,7 +33,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Habilitar CORS para todas las solicitudes
         registry.addMapping("/**")
                 .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")

@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/categorias")
@@ -41,7 +41,7 @@ public class CategoriaController {
 
     // 🟢 Crear una categoría
     @PostMapping
-    public ResponseEntity<Map<String, Object>> crearCategoria(@RequestBody(required = false) Categoria categoria) {
+    public ResponseEntity<Map<String, Object>> crearCategoria(@Valid @RequestBody(required = false) Categoria categoria) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -50,12 +50,6 @@ public class CategoriaController {
                 response.put("error", "El cuerpo de la solicitud está vacío");
                 response.put("ayuda", "Asegúrate de enviar un JSON válido en el formato correcto");
                 response.put("ejemplo", "{ \"nombre\": \"Electrónicos\" }");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            // Validar que la categoría tenga un nombre
-            if (categoria.getNombre() == null || categoria.getNombre().trim().isEmpty()) {
-                response.put("error", "El nombre de la categoría es obligatorio");
                 return ResponseEntity.badRequest().body(response);
             }
 
@@ -88,16 +82,20 @@ public class CategoriaController {
 
     // 🟠 Actualizar una categoría
     @PutMapping("/{id}")
-    public String actualizarCategoria(@PathVariable Integer id, @RequestBody Categoria categoriaActualizada) {
+    public ResponseEntity<Map<String, Object>> actualizarCategoria(@PathVariable Integer id, @Valid @RequestBody Categoria categoriaActualizada) {
+        Map<String, Object> response = new HashMap<>();
         Optional<Categoria> categoria = categoriaRepository.findById(id);
         if (categoria.isPresent()) {
             Categoria c = categoria.get();
             c.setNombre(categoriaActualizada.getNombre());
-            // No modificar productos al actualizar
             categoriaRepository.save(c);
-            return "Categoría actualizada";
+            response.put("mensaje", "Categoría actualizada");
+            response.put("id", c.getId());
+            response.put("nombre", c.getNombre());
+            return ResponseEntity.ok(response);
         } else {
-            return "Categoría no encontrada";
+            response.put("error", "Categoría no encontrada");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 

@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -49,48 +50,28 @@ public class ProductoController {
 
     // Crear un producto
     @PostMapping
-    public ResponseEntity<Map<String, Object>> crearProducto(@RequestBody(required = false) Producto producto) {
+    public ResponseEntity<Map<String, Object>> crearProducto(@Valid @RequestBody(required = false) Producto producto) {
         Map<String, Object> response = new HashMap<>();
-
         try {
-            // Verificar si el producto es nulo
             if (producto == null) {
                 response.put("error", "El cuerpo de la solicitud está vacío");
                 response.put("ayuda", "Asegúrate de enviar un JSON válido en el formato correcto");
                 response.put("ejemplo", "{ \"nombre\": \"Laptop\", \"precio\": 1499.99, \"categoria\": { \"id\": 1 } }");
                 return ResponseEntity.badRequest().body(response);
             }
-
-            // Validar que el producto tenga un nombre
-            if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) {
-                response.put("error", "El nombre del producto es obligatorio");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            // Validar que el producto tenga una categoría
-            if (producto.getCategoria() == null) {
-                response.put("error", "Debe especificar una categoría para el producto");
-                response.put("formato", "La categoría debe incluirse como { \"categoria\": { \"id\": 1 } }");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            // Validar que la categoría exista
-            if (!categoriaRepository.existsById(producto.getCategoria().getId())) {
+            // Buscar la categoría por ID y asociarla al producto
+            Optional<Categoria> categoriaOpt = categoriaRepository.findById(producto.getCategoria().getId());
+            if (!categoriaOpt.isPresent()) {
                 response.put("error", "La categoría especificada no existe");
-                response.put("categoríaId", producto.getCategoria().getId());
-                response.put("sugerencia", "Primero crea una categoría con POST /api/categorias");
                 return ResponseEntity.badRequest().body(response);
             }
-
-            // Guardar el producto
+            producto.setCategoria(categoriaOpt.get());
             Producto guardado = productoRepository.save(producto);
-
             response.put("mensaje", "Producto guardado exitosamente");
             response.put("id", guardado.getId());
             response.put("nombre", guardado.getNombre());
             response.put("precio", guardado.getPrecio());
             response.put("categoriaId", guardado.getCategoria().getId());
-
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("error", "Error al guardar el producto");
@@ -102,7 +83,14 @@ public class ProductoController {
     // Obtener todos los productos
     @GetMapping
     public List<Producto> listarProductos() {
-        return productoRepository.findAll();
+        List<Producto> productos = productoRepository.findAll();
+        // Forzar la carga de la categoría para cada producto
+        productos.forEach(p -> {
+            if (p.getCategoria() != null) {
+                p.getCategoria().getNombre();
+            }
+        });
+        return productos;
     }
 
     // Obtener un producto por ID
@@ -113,19 +101,31 @@ public class ProductoController {
 
     // Actualizar un producto
     @PutMapping("/{id}")
-    public String actualizarProducto(@PathVariable Integer id, @RequestBody Producto productoActualizado) {
-        return productoRepository.findById(id).map(producto -> {
+    public ResponseEntity<Map<String, Object>> actualizarProducto(@PathVariable Integer id, @Valid @RequestBody Producto productoActualizado) {
+        Map<String, Object> response = new HashMap<>();
+        Optional<Producto> productoOpt = productoRepository.findById(id);
+        if (productoOpt.isPresent()) {
+            Producto producto = productoOpt.get();
             producto.setNombre(productoActualizado.getNombre());
             producto.setPrecio(productoActualizado.getPrecio());
-
+            // Buscar la categoría por ID y asociarla al producto
             if (productoActualizado.getCategoria() != null) {
                 Optional<Categoria> cat = categoriaRepository.findById(productoActualizado.getCategoria().getId());
                 cat.ifPresent(producto::setCategoria);
+            } else {
+                producto.setCategoria(null);
             }
-
             productoRepository.save(producto);
-            return "Producto actualizado";
-        }).orElse("Producto no encontrado");
+            response.put("mensaje", "Producto actualizado");
+            response.put("id", producto.getId());
+            response.put("nombre", producto.getNombre());
+            response.put("precio", producto.getPrecio());
+            response.put("categoriaId", producto.getCategoria() != null ? producto.getCategoria().getId() : null);
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "Producto no encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 
     // Eliminar un producto
@@ -143,13 +143,11 @@ public class ProductoController {
     @GetMapping("/{id}/etiquetas")
     public ResponseEntity<?> obtenerEtiquetasDeProducto(@PathVariable Integer id) {
         Optional<Producto> productoOpt = productoRepository.findById(id);
-
         if (!productoOpt.isPresent()) {
             Map<String, String> response = new HashMap<>();
             response.put("error", "Producto no encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-
         return ResponseEntity.ok(productoOpt.get().getEtiquetas());
     }
 }
