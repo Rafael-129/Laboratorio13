@@ -12,13 +12,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/h2-console/**") // Permitir POST en H2
+                .disable()
+            )
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.disable()) // Permitir frames para H2
+            )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/api/auth/**",
                     "/swagger-ui.html", "/swagger-ui/**", "/api-docs/**", "/api-docs",
-                    "/js/**", "/css/**", "/images/**"
+                    "/js/**", "/css/**", "/images/**",
+                    "/h2-console/**" // <-- Permitir acceso a H2 Console
                 ).permitAll()
                 .anyRequest().authenticated()
             )

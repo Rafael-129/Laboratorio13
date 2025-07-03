@@ -1,0 +1,30 @@
+# Endpoints principales:
+# Categorías: GET/POST/PUT/DELETE /api/categorias
+# Productos:  GET/POST/PUT/DELETE /api/productos
+# Etiquetas:  GET/POST/PUT/DELETE /api/etiquetas
+# Swagger UI: /swagger-ui.html
+
+spring.application.name=Laboratorio13
+
+# Configuración para H2 en memoria
+spring.datasource.url=jdbc:h2:mem:lab13db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
+
+# H2 Console
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+
+dependencies {
+    // ...existing code...
+    implementation 'com.h2database:h2'
+    // ...existing code...
+}
